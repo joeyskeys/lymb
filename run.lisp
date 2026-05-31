@@ -2,5 +2,6 @@
 ;;;; run.lisp — load Lymb and start the REPL.
 ;;;;   sbcl --script run.lisp
 
-(load (merge-pathnames #p"load.lisp" *load-trueroot*))
-(lymb)
+(load (merge-pathnames #p"load.lisp"
+                       (directory-namestring *load-pathname*)))
+(lymb:lymb)

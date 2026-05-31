@@ -22,14 +22,67 @@
   (let ((simplified (mapcar #'simplify-expr terms)))
     (simplify-sum-terms simplified)))
 
+(defun canonical-symbolic-part (part)
+  (if (product-expr-p part)
+      (let ((sorted (sort (copy-seq (expr-args part)) #'expr-order<)))
+        (if (= (length sorted) 1)
+            (first sorted)
+            (apply #'make-product sorted)))
+      part))
+
+(defun expr-order< (a b)
+  (string< (write-to-string a) (write-to-string b)))
+
+(defun split-term-coefficient (term)
+  "Return (values coefficient symbolic-part) for a sum term."
+  (cond
+    ((symbol-expr-p term)
+     (values 1 term))
+    ((product-expr-p term)
+     (let ((coeff 1)
+           (factors nil))
+       (dolist (factor (expr-args term))
+         (if (number-expr-p factor)
+             (setf coeff (* coeff factor))
+             (push factor factors)))
+       (values coeff
+               (canonical-symbolic-part
+                (if (= (length factors) 1)
+                    (first factors)
+                    (apply #'make-product (nreverse factors)))))))
+    (t
+     (values 1 term))))
+
+(defun add-like-term (groups sym coeff)
+  (if (zerop coeff)
+      groups
+      (let ((pair (assoc sym groups :test #'equal)))
+        (if pair
+            (progn
+              (incf (cdr pair) coeff)
+              (if (zerop (cdr pair))
+                  (remove pair groups :test #'eq)
+                  groups))
+            (cons (cons sym coeff) groups)))))
+
+(defun rebuild-sum-term (sym coeff)
+  (cond
+    ((eql sym 1) coeff)
+    ((eql coeff 1) sym)
+    (t (make-product coeff sym))))
+
 (defun simplify-sum-terms (terms)
   (let ((constant 0)
-        (rest nil))
+        (groups nil))
     (dolist (term terms)
       (if (number-expr-p term)
           (incf constant term)
-          (push term rest)))
-    (let ((combined (nreverse rest)))
+          (multiple-value-bind (coeff sym)
+              (split-term-coefficient term)
+            (setf groups (add-like-term groups sym coeff)))))
+    (let ((combined (mapcar (lambda (pair)
+                              (rebuild-sum-term (car pair) (cdr pair)))
+                            groups)))
       (cond
         ((and (zerop constant) (null combined)) 0)
         ((zerop constant)
