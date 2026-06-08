@@ -20,7 +20,17 @@
 
 (defun simplify-sum (terms)
   (let ((simplified (mapcar #'simplify-expr terms)))
-    (simplify-sum-terms simplified)))
+    (simplify-sum-terms (flatten-sum-terms simplified))))
+
+(defun flatten-sum-term (term)
+  (if (sum-expr-p term)
+      (loop for subterm in (expr-args term)
+            appending (flatten-sum-term subterm))
+      (list term)))
+
+(defun flatten-sum-terms (terms)
+  (loop for term in terms
+        appending (flatten-sum-term term)))
 
 (defun canonical-symbolic-part (part)
   (if (product-expr-p part)

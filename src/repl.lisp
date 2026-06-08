@@ -6,14 +6,12 @@
   (let ((*package* (find-package :lymb)))
     (read stream nil :eof)))
 
+(defun show (expr)
+  "Pretty-print an expression without simplifying it."
+  (expr->string expr))
+
 (defun lymb-eval (form)
-  (cond
-    ((and (consp form) (eq (car form) 'simplify))
-     (simplify (second form)))
-    ((and (consp form) (eq (car form) 'show))
-     (expr->string (second form)))
-    (t
-     (eval form))))
+  (eval form))
 
 (defun lymb-print (value stream)
   (if (stringp value)

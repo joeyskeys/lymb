@@ -21,6 +21,7 @@
    ;; printing
    :expr->string
    :print-expr
+   :show
    ;; simplification
    :simplify
    ;; REPL
