@@ -1,0 +1,7 @@
+(in-package :lymb)
+(let ((out (html-demo)))
+  (unless (search "<h1>welcome, Alice</h1>" out)
+    (error "missing h1: ~a" out))
+  (unless (search "<li>apples</li>" out)
+    (error "missing li: ~a" out))
+  (format t "html demo ok~%~a~%" out))

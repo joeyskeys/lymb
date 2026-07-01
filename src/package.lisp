@@ -24,6 +24,12 @@
    :show
    ;; simplification
    :simplify
+   ;; HTML DSL (macros)
+   :html
+   :html-loop
+   :html-text
+   :html-escape
+   :html-demo
    ;; REPL
    :lymb))
 

@@ -18,6 +18,7 @@
                 "src/expr.lisp"
                 "src/print.lisp"
                 "src/simplify.lisp"
+                "src/html.lisp"
                 "src/repl.lisp"))
   (load-lymb-file file))
 
@@ -27,4 +28,5 @@
 (format t "  (simplify '(+ 0 x))~%")
 (format t "  (simplify '(* 1 x (+ 2 3)))~%")
 (format t "  (expr->string '(+ (* 2 x) 3))~%")
+(format t "  (html-demo)     ; HTML macro demo~%")
 (format t "  (lymb)          ; start the interactive REPL~%~%")
